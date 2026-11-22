@@ -15,6 +15,10 @@ Timezone: Asia/Baghdad (UTC+3). All dates in Arabic: e.g. «الأحد 22 تشر
    optional `pill` (default «اقتصاد اليوم»; use «عاجل» for breaking), optional `cover` (false = no cover),
    `news[]` each with `short` (cover line), `tag`, `title` (≤ ~45 chars), `stat`, `stat_label`,
    `body` (1–2 sentences), `angle` (one-line «زاوية اقتصادية»), `source`.
+   Layouts vary automatically (navy, lime, split, light; plus `quote` for statements — set
+   `"layout":"quote"`, `"quote"` (paraphrase, marked «بتصرّف» in `speaker`) and `"speaker"`).
+   Pick layouts so neighbouring stories differ; use `cover_layout` navy/lime to vary covers by day.
+   Also vary wording and the «زاوية اقتصادية» line; avoid repeating the same phrasing every day.
 4. Always open (Read) every rendered JPEG and check nothing overflows or overlaps the footer
    before publishing. Shorten text and re-render if it does.
 

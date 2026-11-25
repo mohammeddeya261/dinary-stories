@@ -13,8 +13,12 @@ CHROME = shutil.which("google-chrome") or shutil.which("chromium") or shutil.whi
 NAVY, DEEP, LIME, SOFT, MUTED = "#200F8C", "#170A6B", "#D3D83E", "#DAD6F5", "#B9B3E6"
 e = lambda s: html.escape(str(s or ""))
 
+import base64
+def furl(path):
+    return "data:font/woff2;base64," + base64.b64encode(open(path, "rb").read()).decode()
+RANGES = {"arabic": "U+0600-06FF,U+0750-077F,U+0870-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC", "latin": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"}
 faces = "".join(
-    f"@font-face{{font-family:P;font-weight:{w};src:url(file://{F}-{s}-{w}-normal.woff2)}}"
+    f"@font-face{{font-family:P;font-weight:{w};src:url({furl(F + f'-{s}-{w}-normal.woff2')});unicode-range:{RANGES[s]}}}"
     for w in (400, 600, 700) for s in ("arabic", "latin"))
 
 CSS = faces + f"""
@@ -62,13 +66,63 @@ h2{{font-size:70px;font-weight:700;line-height:1.25}}
 .story .main{{top:300px;bottom:460px;right:90px;left:90px;justify-content:center;gap:44px}}
 .story h1{{font-size:160px;line-height:1.05}} .story .desc{{font-size:52px;font-weight:600}}
 """
+
+# ---------- theme: realestate (السوق العقاري) ----------
+FD = str(BASE / "fonts")
+RE_FACES = "".join(
+    f"@font-face{{font-family:H;font-weight:{w};src:url({furl(FD + f'/el-messiri-{s}-{w}-normal.woff2')});unicode-range:{RANGES[s]}}}"
+    for w in (500, 700) for s in ("arabic", "latin")) + "".join(
+    f"@font-face{{font-family:B;font-weight:{w};src:url({furl(FD + f'/readex-pro-{s}-{w}-normal.woff2')});unicode-range:{RANGES[s]}}}"
+    for w in (400, 500, 600, 700) for s in ("arabic", "latin"))
+SAND, BRASS, NIGHT = "#F3EBDD", "#C9A25E", "#0D2236"
+RE_CSS = RE_FACES + f"""
+body{{font-family:B;background:linear-gradient(165deg,#12324A 0%,{NIGHT} 55%,#091827 100%)}}
+.grid{{background-image:linear-gradient(rgba(201,162,94,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,94,.07) 1px,transparent 1px),linear-gradient(rgba(201,162,94,.10) 2px,transparent 2px),linear-gradient(90deg,rgba(201,162,94,.10) 2px,transparent 2px);background-size:36px 36px,36px 36px,180px 180px,180px 180px}}
+.corner{{display:none}}
+.pill{{background:transparent;color:{BRASS};border:3px solid {BRASS};font-family:H;font-weight:700;display:flex;align-items:center;gap:12px;padding:6px 26px 10px}}
+.num{{color:{SAND}}}
+.idx{{font-family:H;color:{NIGHT};background:{BRASS};border-radius:14px;padding:10px 22px 16px;font-size:58px}}
+h1,h2,.nsub{{font-family:H}} h1 span,h2 span{{color:{BRASS}}}
+.chip{{background:rgba(201,162,94,.12);border-color:{BRASS};color:{SAND}}}
+.big{{font-family:B;color:{BRASS};font-size:190px;letter-spacing:-4px}}
+.bigl{{color:{SAND}}}
+.kick{{color:{BRASS};letter-spacing:1px}}
+.card{{background:{SAND};color:{NIGHT};border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35)}}
+.r+.r,.li+.li{{border-top:2px dashed #CDBB98}}
+.r .k{{color:#6B5A3A}} .r .v{{color:{NIGHT}}}
+.li b{{color:{BRASS};font-family:H}}
+.box{{border:none;background:rgba(201,162,94,.14);border-right:8px solid {BRASS};border-radius:14px}}
+.box b{{color:{BRASS}}} .box.big2 svg{{display:none}}
+.src{{color:#9FB3C4}} .cta small{{color:#9FB3C4}}
+.foot{{background:#081624;border-top:4px solid {BRASS}}}
+.foot .when{{color:{SAND}}}
+.decor{{position:absolute;pointer-events:none}}
+"""
+HOUSE = f'<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{BRASS}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>'
+def skyline(opacity):
+    # architectural line skyline across the bottom, drawn above the footer
+    b = [(0,560,150,250),(150,520,120,290),(270,600,170,210),(440,470,110,340),(550,540,150,270),(700,580,130,230),(830,500,120,310),(950,560,130,250)]
+    parts = []
+    for x,y,w,h in b:
+        parts.append(f'<rect x="{x+6}" y="{y}" width="{w-12}" height="{h}" />')
+        for wy in range(y+28, y+h-30, 44):
+            for wx in range(x+26, x+w-30, 34):
+                parts.append(f'<rect x="{wx}" y="{wy}" width="14" height="20" />')
+    return (f'<svg class="decor" style="left:0;bottom:92px;opacity:{opacity}" width="1080" height="810" viewBox="0 0 1080 810" '
+            f'fill="none" stroke="{BRASS}" stroke-width="2">{"".join(parts)}<line x1="0" y1="808" x2="1080" y2="808"/></svg>')
+PLAN = (f'<svg class="decor" style="left:46px;top:150px;opacity:.28" width="300" height="240" viewBox="0 0 300 240" fill="none" stroke="{SAND}" stroke-width="2">'
+        '<rect x="2" y="2" width="296" height="236"/><line x1="150" y1="2" x2="150" y2="140"/><line x1="2" y1="140" x2="230" y2="140"/>'
+        '<line x1="230" y1="140" x2="230" y2="238"/><path d="M150 100 a40 40 0 0 1 40 40"/><path d="M60 140 a36 36 0 0 0 -36 -36"/>'
+        '<line x1="20" y1="20" x2="130" y2="20" stroke-dasharray="6 6"/><text x="40" y="80" fill="#F3EBDD" stroke="none" font-size="18">4 × 5 م</text></svg>')
+
 CLOCK = f'<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="{LIME}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 
 def top(s, show_idx):
     sub = f'<span class="sub">{e(data.get("date_line"))}</span>' if data.get("date_line") else ""
     num = f'<span class="num">{e(data.get("num"))}</span>' if data.get("num") else ""
     idx = f'<div class="idx">{e(s.get("n"))}</div>' if show_idx and s.get("n") else ""
-    return f'<div class="top"><div class="l"><span class="pill">{e(data["program"])}</span>{num}{sub}</div>{idx}</div>'
+    icon = HOUSE if RE else ""
+    return f'<div class="top"><div class="l"><span class="pill">{icon}{e(data["program"])}</span>{num}{sub}</div>{idx}</div>'
 
 def foot(story=False):
     return (f'<div class="foot{" st" if story else ""}"><div class="logo"><div class="mark"><i></i></div>'
@@ -111,13 +165,18 @@ def slide(s):
         return True, False, f'{chip}<h1>{title(s["title"], s.get("title2"))}</h1><div class="desc">{e(s.get("desc"))}</div>{box}'
     raise SystemExit(f"unknown slide type {t}")
 
+RE = data.get("theme") == "realestate"
+def decor(s):
+    if s["type"] in ("cover", "list"): return skyline(.30) + PLAN
+    return skyline(.13)
+
 def page(s):
     story = s["type"] == "story"
     corner, show_idx, inner = slide(s)
     h = 1920 if story else 1350
-    return (f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>{CSS}'
+    return (f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>{CSS}{RE_CSS if RE else ""}'
             f'body{{width:1080px;height:{h}px}}</style></head><body class="{"story" if story else ""}">'
-            f'<div class="grid"></div>{"<div class=corner></div>" if corner else ""}'
+            f'<div class="grid"></div>{"<div class=corner></div>" if corner else ""}{decor(s) if RE else ""}'
             f'{"" if story else top(s, show_idx)}<div class="main">{inner}</div>{foot(story)}</body></html>')
 
 async def main():
@@ -127,7 +186,7 @@ async def main():
         for i, s in enumerate(data["slides"]):
             h = 1920 if s["type"] == "story" else 1350
             pg = await b.new_page(viewport={"width": 1080, "height": h})
-            await pg.set_content(page(s)); await pg.wait_for_timeout(400)
+            await pg.set_content(page(s)); await pg.evaluate("document.fonts.ready.then(()=>1)"); await pg.wait_for_timeout(500)
             over = await pg.evaluate("(()=>{const m=document.querySelector('.main');return m.scrollHeight>m.clientHeight+2})()")
             f = OUT / f"{PREFIX}_{i}.jpg"
             await pg.screenshot(path=str(f), type="jpeg", quality=92)

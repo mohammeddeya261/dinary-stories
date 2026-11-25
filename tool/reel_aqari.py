@@ -19,7 +19,7 @@ faces = "".join(f"@font-face{{font-family:{fam};font-weight:{w};src:url({furl(f'
                 for w in ws for s, r in (("arabic", AR), ("latin", LA)))
 SAND, BRASS, NIGHT = "#F3EBDD", "#C9A25E", "#0D2236"
 # timeline (seconds)
-T = dict(h1=0.15, h2=0.9, beat=2.1, rise=2.4, cnt=4.4, cnt_end=6.4, why=7.0, ask=9.4, end=SEC - 1.4)
+T = dict(h1=0.0, h2=0.7, beat=1.7, rise=2.4, cnt=4.4, cnt_end=6.4, why=7.0, ask=9.4, end=SEC - 1.4)
 
 random.seed(11)
 GROUND = 1760
@@ -27,7 +27,8 @@ blds = [(x, GROUND - h, w, h) for x, w, h in
         [(-10,160,330),(150,130,430),(280,180,280),(460,140,480),(600,170,360),(770,150,300),(920,170,400)]]
 svg = []
 for i, (x, y, w, h) in enumerate(blds):
-    wins = [f'<rect class="w" data-t="{random.uniform(T["cnt"]-0.4, T["cnt_end"]+0.4):.2f}" x="{wx}" y="{wy}" width="18" height="26" rx="2"/>'
+    wins = [(f'<rect class="w" data-base="1" data-t="0" x="{wx}" y="{wy}" width="18" height="26" rx="2"/>' if random.random() < .35 else
+             f'<rect class="w" data-t="{random.uniform(T["cnt"]-0.4, T["cnt_end"]+0.4):.2f}" data-off="{random.uniform(SEC-1.2, SEC-0.3):.2f}" x="{wx}" y="{wy}" width="18" height="26" rx="2"/>')
             for wy in range(y + 34, y + h - 40, 52) for wx in range(x + 24, x + w - 34, 38)]
     svg.append(f'<g class="b" data-i="{i}"><rect x="{x+6}" y="{y}" width="{w-12}" height="{h}" fill="#0F2A40" stroke="{BRASS}" stroke-width="3"/>{"".join(wins)}</g>')
 # crane on the tallest building (index 3)
@@ -39,7 +40,7 @@ crane = (f'<g id="crane" class="b" data-i="3"><line x1="{cx}" y1="{cy}" x2="{cx}
 stars = "".join(f'<circle class="s" data-p="{random.uniform(0,6.28):.2f}" cx="{random.randint(20,1060)}" cy="{random.randint(60,900)}" r="{random.choice([1.5,2,2.5])}" fill="#fff"/>'
                 for _ in range(70))
 cars = "".join(f'<g class="car" data-o="{o}" data-v="{v}"><rect x="0" y="{GROUND+14}" width="70" height="10" rx="5" fill="#E8C77E"/>'
-               f'<circle cx="64" cy="{GROUND+19}" r="9" fill="rgba(255,240,200,.9)"/></g>' for o, v in ((0, 260), (520, 330), (900, 210)))
+               f'<circle cx="64" cy="{GROUND+19}" r="9" fill="rgba(255,240,200,.9)"/></g>' for o, v in ((0, 3), (520, 4), (900, 2)))
 SKY = (f'<svg id="sky" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;left:0;top:0">{stars}'
        f'<circle cx="170" cy="1040" r="62" fill="#F3EBDD" opacity=".85"/><circle cx="196" cy="1024" r="56" fill="#0F2B42"/>'
        f'<clipPath id="cut"><rect x="-200" y="0" width="1480" height="{GROUND}"/></clipPath><g id="city" clip-path="url(#cut)">{"".join(svg)}{crane}</g><line x1="0" y1="{GROUND}" x2="1080" y2="{GROUND}" stroke="{BRASS}" stroke-width="4"/>{cars}</svg>')
@@ -82,22 +83,22 @@ const T={json.dumps(T)}, NUM={cfg['num']}, SEC={SEC};
 function vis(id,a,b){{const o=Math.min(seg(window.t,a,.35),1-seg(window.t,b,.3));document.getElementById(id).style.opacity=o;return o;}}
 function popIn(id,a){{const e=document.getElementById(id);const p=pop(window.t,a,.45);e.style.transform=`scale(${{.4+.6*p}})`;e.style.opacity=cl((window.t-a)/.15);}}
 function render(t){{window.t=t;
-  const z=1+.08*seg(t,0,SEC), sh=(Math.abs(t-T.beat)<.12||Math.abs(t-T.why)<.12)?Math.sin(t*90)*6:0;
+  const z=1+.07*Math.sin(Math.PI*t/SEC), sh=(Math.abs(t-T.beat)<.12||Math.abs(t-T.why)<.12)?Math.sin(t*90)*6:0;
   document.getElementById('cam').style.transform=`scale(${{z}}) translateX(${{sh}}px)`;
-  document.querySelectorAll('.s').forEach(s=>s.style.opacity=.35+.65*Math.abs(Math.sin(t*2+ +s.dataset.p)));
-  document.querySelectorAll('.b').forEach(g=>{{const i=+g.dataset.i;const p=pop(t,T.rise+i*.12,.7);g.style.transform=`translateY(${{(1-p)*700}}px)`;}});
-  document.getElementById('arm').style.transform=`rotate(${{Math.sin(t*.9)*7}}deg)`;
-  document.querySelectorAll('.w').forEach(r=>{{const on=t>=+r.dataset.t;r.style.fill=on?'#E8C77E':'#1B3A55';r.style.filter=on?'drop-shadow(0 0 8px rgba(232,199,126,.9))':'none';}});
-  document.querySelectorAll('.car').forEach(c=>{{const x=((+c.dataset.o + t*c.dataset.v)%1240)-120;c.setAttribute('transform',`translate(${{x}},0)`);}});
-  vis('s1',0,T.rise+.3); popIn('h1',T.h1); popIn('h2',T.h2); popIn('beat',T.beat);
+  document.querySelectorAll('.s').forEach(s=>s.style.opacity=.35+.65*Math.abs(Math.sin(2*Math.PI*3*t/SEC+ +s.dataset.p)));
+  document.querySelectorAll('.b').forEach(g=>{{g.style.transform='none';}});
+  document.getElementById('arm').style.transform=`rotate(${{Math.sin(2*Math.PI*2*t/SEC)*7}}deg)`;
+  document.querySelectorAll('.w').forEach(r=>{{const on=r.dataset.base?true:(t>=+r.dataset.t && t<+r.dataset.off);r.style.fill=on?'#E8C77E':'#1B3A55';r.style.filter=on?'drop-shadow(0 0 8px rgba(232,199,126,.9))':'none';}});
+  document.querySelectorAll('.car').forEach(c=>{{const x=((+c.dataset.o + t*1240*(+c.dataset.v)/SEC)%1240)-120;c.setAttribute('transform',`translate(${{x}},0)`);}});
+  const s1=document.getElementById('s1'); s1.style.opacity=Math.max(1-seg(t,T.rise+.3,.3), seg(t,SEC-.45,.4)); const h1=document.getElementById('h1'); h1.style.opacity=1; h1.style.transform='none'; ['h2','beat'].forEach(id=>{{if(t>SEC-1)document.getElementById(id).style.opacity=0;}}); if(t<SEC-1){{popIn('h2',T.h2); popIn('beat',T.beat);}}
   vis('s2',T.cnt-.3,T.why-.2); popIn('pre',T.cnt-.3); popIn('num',T.cnt);
   const c=seg(t,T.cnt,T.cnt_end-T.cnt); document.getElementById('num').textContent=(NUM*c).toFixed(1);
   popIn('nl',T.cnt_end-.5); popIn('src',T.cnt_end);
   vis('s3',T.why-.1,T.ask-.2); popIn('w1',T.why); popIn('w2',T.why+.9);
   const ar=document.getElementById('arrow'); ar.style.opacity=cl((t-T.why-.5)/.2); ar.style.transform=`translateY(${{Math.sin(t*10)*10}}px)`;
-  vis('s4',T.ask-.1,SEC+1); popIn('ask',T.ask); popIn('o1',T.ask+.6); popIn('o2',T.ask+.8); popIn('o3',T.ask+1.0); popIn('asub',T.ask+1.5);
-  document.getElementById('tag').style.opacity=cl((t-T.rise)/.4);
-  document.getElementById('logo').style.opacity=cl((t-T.ask)/.4);
+  vis('s4',T.ask-.1,SEC-.75); popIn('ask',T.ask); popIn('o1',T.ask+.6); popIn('o2',T.ask+.8); popIn('o3',T.ask+1.0); popIn('asub',T.ask+1.5);
+  document.getElementById('tag').style.opacity=1;
+  document.getElementById('logo').style.opacity=Math.min(cl((t-T.ask)/.4),1-seg(t,SEC-.75,.3));
 }}
 render(0);
 </script></body></html>"""
@@ -106,13 +107,13 @@ def soundtrack(path):
     # Original generated audio: warm pad chords, whooshes on scene cuts, ticks while the number counts.
     sr, n = 44100, int(44100 * SEC)
     chords = [(220.0, 261.63, 329.63), (174.61, 220.0, 261.63), (196.0, 246.94, 293.66), (164.81, 207.65, 246.94)]
-    hits = [T["h1"], T["h2"], T["beat"], T["rise"], T["cnt"], T["why"], T["why"] + .9, T["ask"]]
+    hits = [SEC - .45, T["h2"], T["beat"], T["rise"], T["cnt"], T["why"], T["why"] + .9, T["ask"]]
     random.seed(3)
     buf = bytearray()
     for i in range(n):
         t = i / sr
         ch = chords[int(t / (SEC / 4)) % 4]
-        env = min(1, t / 1.2) * min(1, (SEC - t) / 1.0)
+        env = 1.0
         pad = sum(math.sin(2 * math.pi * f * t) + .3 * math.sin(4 * math.pi * f * t) for f in ch) * .045 * env
         bass = math.sin(math.pi * ch[0] * t) * .08 * env * (0.6 + 0.4 * math.sin(2 * math.pi * t) ** 2)
         s = pad + bass

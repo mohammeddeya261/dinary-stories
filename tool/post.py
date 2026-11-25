@@ -68,55 +68,43 @@ h2{{font-size:70px;font-weight:700;line-height:1.25}}
 """
 
 # ---------- theme: realestate (السوق العقاري) ----------
-FD = str(BASE / "fonts")
-RE_FACES = "".join(
-    f"@font-face{{font-family:H;font-weight:{w};src:url({furl(FD + f'/el-messiri-{s}-{w}-normal.woff2')});unicode-range:{RANGES[s]}}}"
-    for w in (500, 700) for s in ("arabic", "latin")) + "".join(
-    f"@font-face{{font-family:B;font-weight:{w};src:url({furl(FD + f'/readex-pro-{s}-{w}-normal.woff2')});unicode-range:{RANGES[s]}}}"
-    for w in (400, 500, 600, 700) for s in ("arabic", "latin"))
-SAND, BRASS, NIGHT = "#F3EBDD", "#C9A25E", "#0D2236"
-RE_CSS = RE_FACES + f"""
-body{{font-family:B;background:linear-gradient(165deg,#12324A 0%,{NIGHT} 55%,#091827 100%)}}
-.grid{{background-image:linear-gradient(rgba(201,162,94,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,94,.07) 1px,transparent 1px),linear-gradient(rgba(201,162,94,.10) 2px,transparent 2px),linear-gradient(90deg,rgba(201,162,94,.10) 2px,transparent 2px);background-size:36px 36px,36px 36px,180px 180px,180px 180px}}
-.corner{{display:none}}
-.pill{{background:transparent;color:{BRASS};border:3px solid {BRASS};font-family:H;font-weight:700;display:flex;align-items:center;gap:12px;padding:6px 26px 10px}}
-.num{{color:{SAND}}}
-.idx{{font-family:H;color:{NIGHT};background:{BRASS};border-radius:14px;padding:10px 22px 16px;font-size:58px}}
-h1,h2,.nsub{{font-family:H}} h1 span,h2 span{{color:{BRASS}}}
-.chip{{background:rgba(201,162,94,.12);border-color:{BRASS};color:{SAND}}}
-.big{{font-family:B;color:{BRASS};font-size:190px;letter-spacing:-4px}}
-.bigl{{color:{SAND}}}
-.kick{{color:{BRASS};letter-spacing:1px}}
-.card{{background:{SAND};color:{NIGHT};border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35)}}
-.r+.r,.li+.li{{border-top:2px dashed #CDBB98}}
-.r .k{{color:#6B5A3A}} .r .v{{color:{NIGHT}}}
-.li b{{color:{BRASS};font-family:H}}
-.box{{border:none;background:rgba(201,162,94,.14);border-right:8px solid {BRASS};border-radius:14px}}
-.box b{{color:{BRASS}}} .box.big2 svg{{display:none}}
-.src{{color:#9FB3C4}} .cta small{{color:#9FB3C4}}
-.foot{{background:#081624;border-top:4px solid {BRASS}}}
-.foot .when{{color:{SAND}}}
+# Dinary identity (navy, lemon, IBM Plex) with a real-estate layer: roofline pattern, house-shaped
+# number badge, card with a lemon "roof" edge, lemon skyline and a floor-plan sketch.
+import urllib.parse
+ROOF = urllib.parse.quote(f'<svg xmlns="http://www.w3.org/2000/svg" width="120" height="70"><path d="M10 50 L40 22 L70 50 M70 50 L100 22 L130 50" fill="none" stroke="{LIME}" stroke-opacity=".07" stroke-width="3"/></svg>')
+RE_CSS = f"""
+body{{background:radial-gradient(circle at 50% 38%,#3A27C4 0%,{NAVY} 45%,#13066B 100%)}}
+.grid{{background-image:url("data:image/svg+xml,{ROOF}");background-size:120px 70px}}
+.pill{{display:flex;align-items:center;gap:12px;padding:8px 28px 12px}}
+.idx{{background:{LIME};color:{NAVY};width:120px;height:112px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;font-size:52px;
+  clip-path:polygon(50% 0,100% 38%,100% 100%,0 100%,0 38%)}}
+.big{{font-size:190px;letter-spacing:-4px}} .item .big{{font-size:160px}}
+.card{{border-top:10px solid {LIME};border-radius:10px 10px 24px 24px;box-shadow:0 22px 50px rgba(8,0,60,.45)}}
+.r+.r,.li+.li{{border-top:2px dashed #D4D0EE}}
+.li b{{color:{NAVY};background:{LIME};border-radius:8px;padding:0 10px 4px;font-size:30px}}
+.box{{border:none;background:rgba(255,255,255,.08);border-right:10px solid {LIME};border-radius:14px}}
+.box.big2 svg{{display:none}}
 .decor{{position:absolute;pointer-events:none}}
 .main{{top:165px;bottom:150px}}
 .cover .main,.list .main{{justify-content:center}} .cover .cta.swipe,.list .cta{{margin-top:10px}}
-.cta.swipe{{background:rgba(201,162,94,.16);color:{SAND}}}
+.cta.swipe{{background:{LIME};color:{NAVY};padding:10px 34px 14px}}
 """
-HOUSE = f'<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{BRASS}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>'
+HOUSE = f'<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{NAVY}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>'
 def skyline(opacity):
-    # architectural line skyline across the bottom, drawn above the footer
-    b = [(0,560,150,250),(150,520,120,290),(270,600,170,210),(440,470,110,340),(550,540,150,270),(700,580,130,230),(830,500,120,310),(950,560,130,250)]
+    # lemon line skyline across the bottom, drawn above the footer
+    b = [(0,600,150,210),(150,560,120,250),(270,630,170,180),(440,520,110,290),(550,590,150,220),(700,620,130,190),(830,550,120,260),(950,600,130,210)]
     parts = []
     for x,y,w,h in b:
-        parts.append(f'<rect x="{x+6}" y="{y}" width="{w-12}" height="{h}" />')
-        for wy in range(y+28, y+h-30, 44):
+        parts.append(f'<path d="M{x+6} {y+h} V{y+18} L{x+w/2} {y-14} L{x+w-6} {y+18} V{y+h}" />' if (x//10) % 2 else f'<rect x="{x+6}" y="{y}" width="{w-12}" height="{h}" />')
+        for wy in range(y+34, y+h-30, 44):
             for wx in range(x+26, x+w-30, 34):
                 parts.append(f'<rect x="{wx}" y="{wy}" width="14" height="20" />')
     return (f'<svg class="decor" style="left:0;bottom:92px;opacity:{opacity}" width="1080" height="810" viewBox="0 0 1080 810" '
-            f'fill="none" stroke="{BRASS}" stroke-width="2">{"".join(parts)}<line x1="0" y1="808" x2="1080" y2="808"/></svg>')
-PLAN = (f'<svg class="decor" style="left:46px;top:150px;opacity:.28" width="300" height="240" viewBox="0 0 300 240" fill="none" stroke="{SAND}" stroke-width="2">'
+            f'fill="none" stroke="{LIME}" stroke-width="2.5">{"".join(parts)}<line x1="0" y1="808" x2="1080" y2="808"/></svg>')
+PLAN = ('<svg class="decor" style="left:50px;top:170px;opacity:.22" width="300" height="240" viewBox="0 0 300 240" fill="none" stroke="#fff" stroke-width="2">'
         '<rect x="2" y="2" width="296" height="236"/><line x1="150" y1="2" x2="150" y2="140"/><line x1="2" y1="140" x2="230" y2="140"/>'
         '<line x1="230" y1="140" x2="230" y2="238"/><path d="M150 100 a40 40 0 0 1 40 40"/><path d="M60 140 a36 36 0 0 0 -36 -36"/>'
-        '<line x1="20" y1="20" x2="130" y2="20" stroke-dasharray="6 6"/><text x="40" y="80" fill="#F3EBDD" stroke="none" font-size="18">4 × 5 م</text></svg>')
+        '<line x1="20" y1="20" x2="130" y2="20" stroke-dasharray="6 6"/></svg>')
 
 CLOCK = f'<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="{LIME}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 
@@ -170,8 +158,8 @@ def slide(s):
 
 RE = data.get("theme") == "realestate"
 def decor(s):
-    if s["type"] in ("cover", "list"): return skyline(.30) + PLAN
-    return skyline(.13)
+    if s["type"] in ("cover", "list"): return skyline(.32) + PLAN
+    return skyline(.14)
 
 def page(s):
     story = s["type"] == "story"

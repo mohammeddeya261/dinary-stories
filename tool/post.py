@@ -55,7 +55,7 @@ h2{{font-size:70px;font-weight:700;line-height:1.25}}
 .desc{{font-size:34px;line-height:1.55;color:{SOFT}}}
 .kick{{font-size:30px;font-weight:600;color:{MUTED}}}
 .src{{margin-top:auto;font-size:24px;color:{MUTED};line-height:1.5}}
-.cta{{margin-top:auto;font-size:34px;font-weight:700}} .cta small{{display:block;font-size:28px;font-weight:400;color:{MUTED};margin-top:6px}}
+.cta{{margin-top:auto;font-size:34px;font-weight:700}} .cta.swipe{{align-self:flex-end;display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.08);border-radius:999px;padding:10px 30px 14px}} .cta small{{display:block;font-size:28px;font-weight:400;color:{MUTED};margin-top:6px}}
 .foot{{position:absolute;bottom:0;left:0;right:0;height:92px;background:{DEEP};border-top:6px solid {LIME};display:flex;align-items:center;justify-content:space-between;padding:0 70px}}
 .foot.st{{bottom:300px;left:70px;right:70px;border-radius:20px}}
 .logo{{display:flex;align-items:center;gap:16px}}
@@ -97,6 +97,9 @@ h1,h2,.nsub{{font-family:H}} h1 span,h2 span{{color:{BRASS}}}
 .foot{{background:#081624;border-top:4px solid {BRASS}}}
 .foot .when{{color:{SAND}}}
 .decor{{position:absolute;pointer-events:none}}
+.main{{top:165px;bottom:150px}}
+.cover .main,.list .main{{justify-content:center}} .cover .cta.swipe,.list .cta{{margin-top:10px}}
+.cta.swipe{{background:rgba(201,162,94,.16);color:{SAND}}}
 """
 HOUSE = f'<svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="{BRASS}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>'
 def skyline(opacity):
@@ -141,7 +144,7 @@ def slide(s):
         box = (f'<div class="box big2">{CLOCK}<div><b>{e(s["box_title"])}</b><span>{e(s.get("box_sub"))}</span></div></div>'
                if s.get("box_title") else "")
         chip = f'<div class="chip">{e(s["chip"])}</div>' if s.get("chip") else ""
-        inner = f'{chip}<h1>{title(s["title"], s.get("title2"))}</h1>{big}{lst}{box}<div class="cta">{e(s.get("cta"))}</div>'
+        inner = f'{chip}<h1>{title(s["title"], s.get("title2"))}</h1>{big}{lst}{box}<div class="cta swipe">{e(s.get("cta"))}</div>'
         return True, False, inner
     if t == "item":
         rows = "".join(f'<div class="r"><div class="k">{e(k)}</div><div class="v{" red" if i == len(s["rows"]) - 1 and s.get("last_red") else ""}">{e(v)}</div></div>'
@@ -175,7 +178,7 @@ def page(s):
     corner, show_idx, inner = slide(s)
     h = 1920 if story else 1350
     return (f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>{CSS}{RE_CSS if RE else ""}'
-            f'body{{width:1080px;height:{h}px}}</style></head><body class="{"story" if story else ""}">'
+            f'body{{width:1080px;height:{h}px}}</style></head><body class="{"story" if story else s["type"]}">'
             f'<div class="grid"></div>{"<div class=corner></div>" if corner else ""}{decor(s) if RE else ""}'
             f'{"" if story else top(s, show_idx)}<div class="main">{inner}</div>{foot(story)}</body></html>')
 

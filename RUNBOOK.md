@@ -41,3 +41,24 @@ Timezone: Asia/Baghdad (UTC+3). All dates in Arabic: e.g. «الأحد 22 تشر
 - Publish each image with Windsor `execute_action` (connector `instagram`, account
   `17841404495582696`, action `create_story`, params `{"image_url": ...}`), in order, cover first.
 - Append a line to `posted.log`: `<ISO time> | <file> | <title> | <media id>` and push.
+
+## Weekly feed programs (carousels on Instagram)
+Generator: `python3 tool/post.py <content.json> <out_dir> <prefix>` → JPEGs 1080×1350 (and 1080×1920
+for `story` slides). Format: `tool/post_example.json` (slide types `cover`, `item`, `list`, `story`;
+`caption` holds the Instagram caption). It prints OVERFLOW for any slide whose content does not fit:
+shorten and re-render, and always Read every JPEG before publishing.
+Publish a carousel with Windsor `execute_action` (connector `instagram`, account `17841404495582696`,
+action `create_carousel_post`, params `{"image_urls": [...], "caption": ...}`), images in slide order.
+Stories (`create_story`) go one by one. Log every publish in `posted.log` as usual.
+
+- **فرصة الأسبوع** (Saturday ~7:00 م): 3 real, currently open opportunities for Iraqi youth
+  (scholarships, grants, training, jobs, startup programmes), each with a deadline at least 10 days
+  after publishing, confirmed on the official page. Never repeat one already in posted.log.
+  Slides: cover, one `item` per opportunity (rows: الجهة/الجامعات، المدة، الشرط، آخر موعد with
+  `last_red`), a closing `list` («قبل لا تقدّم»), then next week's date in `cta_sub`.
+  If `YYYY-MM-DD/forsa_*.json` and its JPEGs already exist for today, publish those as they are.
+- **حصاد الأسبوع** (Friday ~8:00 م, an hour before the podcast): the week's 5 most important economy
+  stories for Iraq (Saturday to Friday), from posted.log and fresh searches. Slides: cover with the 5
+  headlines in `items`, one `item` slide per story (`kicker`, `title`, `big`, `big_label`, `desc`,
+  `why` as «شنو يعني لك؟», `source`), a closing `list` or cover pointing to the 9:00 م podcast, plus one
+  `story` slide published as a story after the carousel.
